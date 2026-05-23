@@ -1,0 +1,42 @@
+.banner-mascot {
+  pointer-events: none;
+  line-height: 0;
+}
+
+.banner-mascot video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Все страницы — снизу справа экрана */
+.banner-mascot--fixed {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  width: min(148px, 38vw);
+  max-height: 42vh;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.35));
+}
+
+/* Внутри блока DayReveal — прижато к низу справа карточки */
+.banner-mascot--embedded {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  width: min(120px, 32%);
+  max-height: 45%;
+}
+
+@media (max-width: 400px) {
+  .banner-mascot--fixed {
+    width: min(120px, 34vw);
+  }
+
+  .banner-mascot--embedded {
+    width: min(96px, 36%);
+  }
+}

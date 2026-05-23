@@ -1,0 +1,332 @@
+/* Твой путь — плавающий градиент + бонусные дни */
+
+.path-panel {
+  position: relative;
+  margin-bottom: 1.25rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(255, 107, 157, 0.22);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  min-height: 120px;
+}
+
+.path-panel__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.path-panel__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    165deg,
+    rgba(26, 12, 32, 0.35) 0%,
+    rgba(40, 18, 38, 0.5) 45%,
+    rgba(20, 10, 28, 0.55) 100%
+  );
+}
+
+.path-panel__content {
+  position: relative;
+  z-index: 2;
+  padding: 1rem 0.75rem;
+}
+
+.path-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.25rem 0.75rem;
+}
+
+.path-panel__title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 245, 248, 0.75);
+}
+
+.path-panel__badge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a0f1f;
+  background: linear-gradient(135deg, var(--gold), #ffb347);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  box-shadow: 0 2px 12px rgba(255, 209, 102, 0.35);
+}
+
+.path-scroll {
+  overflow-x: auto;
+  padding: 0.35rem 0.15rem 0.55rem;
+  scrollbar-width: none;
+}
+
+.path-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.path-track {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  min-width: min-content;
+  padding: 0.25rem 0.35rem;
+}
+
+/* —— Обычный день —— */
+.path-day {
+  position: relative;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 0.95rem;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.path-day:not(:disabled):hover {
+  transform: scale(1.07);
+  border-color: rgba(255, 107, 157, 0.4);
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.2);
+}
+
+.path-day--active {
+  background: linear-gradient(145deg, #ff8fb8, var(--accent), #c44569);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+  transform: scale(1.12);
+  box-shadow:
+    0 4px 24px rgba(255, 107, 157, 0.5),
+    0 0 0 3px rgba(255, 107, 157, 0.2);
+}
+
+/* Выполненный день — все задания подтверждены */
+.path-day--completed:not(.path-day--active) {
+  background: linear-gradient(145deg, #a8f0b8 0%, #6dd68a 45%, #4bc96a 100%);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #0f3d22;
+  box-shadow:
+    0 3px 14px rgba(75, 201, 106, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.path-day--completed:not(.path-day--active):hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 4px 18px rgba(75, 201, 106, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.path-day--completed.path-day--bonus:not(.path-day--active) {
+  background: linear-gradient(145deg, #b8f5c4 0%, #6dd68a 40%, #4bc96a 100%);
+  box-shadow:
+    0 3px 16px rgba(75, 201, 106, 0.5),
+    0 0 0 2px rgba(255, 209, 102, 0.35);
+}
+
+.path-day--completed .path-day__check {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  font-size: 0.55rem;
+  font-weight: 900;
+  color: #0f3d22;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.path-day--locked {
+  opacity: 0.32;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+
+/* —— Бонусные дни 10, 20, 30 —— */
+.path-day--bonus:not(.path-day--locked) {
+  width: 52px;
+  height: 52px;
+  color: #fff8e0;
+  border: none;
+  background: rgba(255, 209, 102, 0.12);
+  box-shadow:
+    0 0 20px rgba(255, 209, 102, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: bonus-glow-pulse 2.8s ease-in-out infinite;
+}
+
+.path-day--bonus:not(.path-day--locked)::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    #ffd166,
+    #ff9f6b,
+    #ff6b9d,
+    #c9a0ff,
+    #ffd166
+  );
+  background-size: 300% 300%;
+  animation: bonus-border-flow 4s ease infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+}
+
+.path-day--bonus:not(.path-day--locked)::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, rgba(80, 50, 20, 0.5), rgba(40, 20, 50, 0.85));
+  z-index: -1;
+}
+
+.path-day--bonus:not(.path-day--active):not(.path-day--locked):hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 28px rgba(255, 209, 102, 0.45),
+    0 4px 16px rgba(255, 107, 157, 0.2);
+}
+
+.path-day--bonus.path-day--active {
+  background: linear-gradient(145deg, #fff0a8, var(--gold), #ff9f43);
+  color: #4a2800;
+  box-shadow:
+    0 4px 28px rgba(255, 209, 102, 0.55),
+    0 0 0 3px rgba(255, 209, 102, 0.35);
+  animation: none;
+}
+
+.path-day--bonus.path-day--active::before {
+  animation-duration: 2s;
+}
+
+.path-day__star {
+  position: absolute;
+  top: -5px;
+  right: -3px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  line-height: 1;
+  color: #4a2800;
+  background: linear-gradient(145deg, #fff8c8, var(--gold));
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(255, 209, 102, 0.6);
+  animation: star-twinkle 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes bonus-border-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes bonus-glow-pulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes star-twinkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(12deg);
+  }
+}
+
+/* —— Финал 31 —— */
+.path-day--finale:not(.path-day--locked):not(.path-day--bonus) {
+  border-color: rgba(255, 107, 157, 0.55);
+  background: linear-gradient(145deg, rgba(255, 107, 157, 0.2), rgba(255, 209, 102, 0.1));
+  color: var(--accent-soft);
+  box-shadow: 0 0 18px rgba(255, 107, 157, 0.3);
+}
+
+.path-day--finale.path-day--active {
+  background: linear-gradient(145deg, #fff, var(--accent-soft), var(--accent));
+  color: #fff;
+}
+
+.path-day__heart {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  font-size: 0.55rem;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 107, 157, 0.8);
+  z-index: 2;
+}
+
+.path-day__num {
+  position: relative;
+  z-index: 1;
+  display: block;
+  line-height: 1;
+}
+
+.path-day--bonus .path-day__num {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.path-day__icon {
+  font-size: 0.85rem;
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path-day--bonus:not(.path-day--locked),
+  .path-day__star {
+    animation: none;
+  }
+
+  .path-day--bonus:not(.path-day--locked)::before {
+    animation: none;
+    background-position: 50% 50%;
+  }
+}

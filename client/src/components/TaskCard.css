@@ -1,0 +1,149 @@
+.task-list {
+  list-style: none;
+}
+
+.task-card {
+  border-radius: var(--radius);
+  margin-bottom: 0.85rem;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 107, 157, 0.12);
+  opacity: 0;
+  animation: task-card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes task-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-body {
+  padding: 1.2rem;
+}
+
+.task-body__head {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.task-body__icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 107, 157, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-body__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(255, 107, 157, 0.5);
+}
+
+.task-card--done .task-body__dot {
+  background: var(--success);
+  box-shadow: 0 0 12px rgba(123, 237, 159, 0.4);
+}
+
+.task-body__text h3 {
+  font-size: 1.02rem;
+  margin-bottom: 0.3rem;
+}
+
+.task-body__text p {
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.task-body__sent {
+  font-size: 0.78rem;
+  margin-top: 0.3rem;
+  color: var(--muted);
+}
+
+.task-body__wait {
+  text-align: center;
+  margin-top: 0.7rem;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.btn-primary--zaya {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.day-tasks-ready {
+  animation: day-tasks-ready-in 0.4s ease;
+}
+
+@keyframes day-tasks-ready-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.day-gift-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.day-gift-hint strong {
+  color: var(--gold);
+}
+
+.day-tasks-loading {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 0;
+}
+
+.day-tasks-loading--hidden {
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.day-tasks-loading__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: loading-dot 1s ease-in-out infinite;
+}
+
+.day-tasks-loading__dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.day-tasks-loading__dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes loading-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

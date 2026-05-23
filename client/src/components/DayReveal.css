@@ -1,0 +1,139 @@
+.day-reveal {
+  position: relative;
+  margin-bottom: 1.25rem;
+  padding: 2rem 1.25rem 3.5rem;
+  border-radius: var(--radius);
+  background: #000000;
+  border: 1px solid rgba(255, 107, 157, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  text-align: center;
+  overflow: hidden;
+  animation: day-reveal-in 0.45s ease;
+}
+
+@keyframes day-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.day-reveal__glow {
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  width: 120%;
+  height: 80%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(255, 107, 157, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  animation: day-reveal-breathe 3s ease-in-out infinite;
+}
+
+@keyframes day-reveal-breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+.day-reveal__ring-wrap {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  margin: 0 auto;
+}
+
+.day-reveal__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.day-reveal__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.day-reveal__day {
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(255, 107, 157, 0.45);
+}
+
+.day-reveal__sub {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-soft);
+  max-width: 120px;
+  line-height: 1.2;
+}
+
+.day-reveal__msg {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  min-height: 1.5em;
+  transition: opacity 0.25s;
+}
+
+.day-reveal__actions {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.day-reveal__open {
+  width: 100%;
+  max-width: 280px;
+  padding: 0.9rem 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), #c44569);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.35);
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.day-reveal__open:active {
+  transform: scale(0.98);
+}
+
+.day-reveal__skip {
+  background: none;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.day-reveal__skip:hover {
+  color: var(--accent-soft);
+}
