@@ -91,10 +91,10 @@ export default function DashaApp() {
       <div className="app-shell">
         <div className="waiting-day">
           <div className="big">⏳</div>
-          <h2>Скоро начнётся</h2>
-          <p>Первый день — 25 мая 2026. Зай, чуть-чуть подожди.</p>
+          <h2>Скоро все начнётся коть)</h2>
+          <p>Первый день — 25 мая 2026. Зай, чуть-чуть подожди. пжпжпж</p>
           <button type="button" className="btn-secondary" style={{ marginTop: '1rem' }} onClick={logout}>
-            Выйти
+            Слушаюсь Зай! Выйти
           </button>
         </div>
       </div>
