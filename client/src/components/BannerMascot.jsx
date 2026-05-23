@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import bannerVideo from '../banner.mp4';
+import bannerVideo from '../banner1.mp4';
 import './BannerMascot.css';
 
 export default function BannerMascot({ variant = 'fixed', src = bannerVideo, className = '' }) {
