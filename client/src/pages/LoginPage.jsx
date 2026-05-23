@@ -20,7 +20,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      <h1>Зай 💕</h1>
+      <h1>Зайка 💕</h1>
       <p>31 день — Москва и обратно в Сочи</p>
 
       <div className="tabs" style={{ maxWidth: 320, marginTop: '1.5rem' }}>
