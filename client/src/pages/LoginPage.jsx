@@ -23,14 +23,14 @@ export default function LoginPage() {
       <h1>Зай 💕</h1>
       <p>31 день — Москва и обратно в Сочи</p>
 
-      {/* <div className="tabs" style={{ maxWidth: 320, marginTop: '1.5rem' }}>
+      <div className="tabs" style={{ maxWidth: 320, marginTop: '1.5rem' }}>
         <button type="button" className={mode === 'dasha' ? 'active' : ''} onClick={() => setMode('dasha')}>
           Даша
         </button>
         <button type="button" className={mode === 'admin' ? 'active' : ''} onClick={() => setMode('admin')}>
           Лёня
         </button>
-      </div> */}
+      </div>
 
       <form onSubmit={submit}>
         {error && <p className="error">{error}</p>}
