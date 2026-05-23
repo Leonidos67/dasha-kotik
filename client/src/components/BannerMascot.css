@@ -1,13 +1,21 @@
 .banner-mascot {
   pointer-events: none;
   line-height: 0;
+  background: transparent;
 }
 
 .banner-mascot video {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
+  max-height: inherit;
   object-fit: contain;
+  object-position: bottom right;
+  background: transparent;
+  vertical-align: bottom;
+  /* Чёрная подложка в mp4 — на тёмном фоне сайта не видна */
+  mix-blend-mode: screen;
 }
 
 /* Все страницы — снизу справа экрана */
@@ -16,27 +24,55 @@
   right: 0;
   bottom: 0;
   z-index: 90;
-  width: min(148px, 38vw);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  width: auto;
+  max-width: min(148px, 38vw);
   max-height: 42vh;
   filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.35));
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
-/* Внутри блока DayReveal — прижато к низу справа карточки */
+.banner-mascot--fixed video {
+  max-width: min(148px, 38vw);
+  max-height: 42vh;
+}
+
+/* Внутри блока DayReveal */
 .banner-mascot--embedded {
   position: absolute;
   right: 0;
   bottom: 0;
   z-index: 4;
-  width: min(120px, 32%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  width: auto;
+  max-width: min(120px, 32%);
+  max-height: 45%;
+}
+
+.banner-mascot--embedded video {
+  max-width: min(120px, 32%);
   max-height: 45%;
 }
 
 @media (max-width: 400px) {
   .banner-mascot--fixed {
-    width: min(120px, 34vw);
+    max-width: min(120px, 34vw);
+  }
+
+  .banner-mascot--fixed video {
+    max-width: min(120px, 34vw);
   }
 
   .banner-mascot--embedded {
-    width: min(96px, 36%);
+    max-width: min(96px, 36%);
+  }
+
+  .banner-mascot--embedded video {
+    max-width: min(96px, 36%);
   }
 }

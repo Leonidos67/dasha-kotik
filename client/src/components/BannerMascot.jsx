@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import bannerVideo from '../banner1.mp4';
+import bannerVideo from '../banner2.mp4';
 import './BannerMascot.css';
 
 export default function BannerMascot({ variant = 'fixed', src = bannerVideo, className = '' }) {
@@ -27,7 +27,17 @@ export default function BannerMascot({ variant = 'fixed', src = bannerVideo, cla
       className={['banner-mascot', `banner-mascot--${variant}`, className].filter(Boolean).join(' ')}
       aria-hidden
     >
-      <video ref={videoRef} src={src} autoPlay loop muted playsInline preload="auto" />
+      <video
+        ref={videoRef}
+        src={src}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        disablePictureInPicture
+        disableRemotePlayback
+      />
     </div>
   );
 }
