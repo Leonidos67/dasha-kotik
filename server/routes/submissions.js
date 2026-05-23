@@ -7,6 +7,7 @@ import { Day } from '../models/Day.js';
 import { Submission } from '../models/Submission.js';
 import { authRequired } from '../middleware/auth.js';
 import { config } from '../config.js';
+import { publicUploadUrl } from '../utils/uploadUrl.js';
 import { getCurrentDayNumber } from '../utils/dayNumber.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -63,7 +64,7 @@ router.post(
       filename: f.filename,
       originalName: f.originalname,
       mimeType: f.mimetype,
-      url: `/uploads/${f.filename}`,
+      url: publicUploadUrl(`/uploads/${f.filename}`),
     }));
 
     const submission = await Submission.findOneAndUpdate(

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { signToken } from '../middleware/auth.js';
+import { authCookieOptions } from '../utils/cookies.js';
 
 const router = Router();
 
@@ -11,11 +12,7 @@ router.post('/dasha', (req, res) => {
     return res.status(401).json({ error: 'Неверный пароль' });
   }
   const token = signToken('dasha');
-  res.cookie('token', token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie('token', token, authCookieOptions());
   res.json({ ok: true, role: 'dasha' });
 });
 
@@ -25,16 +22,12 @@ router.post('/admin', (req, res) => {
     return res.status(401).json({ error: 'Неверный пароль' });
   }
   const token = signToken('admin');
-  res.cookie('token', token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie('token', token, authCookieOptions());
   res.json({ ok: true, role: 'admin' });
 });
 
 router.post('/logout', (_req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', authCookieOptions());
   res.json({ ok: true });
 });
 

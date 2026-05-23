@@ -1,4 +1,12 @@
-const API = '/api';
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const API = `${API_BASE}/api`;
+
+/** Абсолютный URL для /uploads/... с Render */
+export function mediaUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+}
 
 async function request(path, options = {}) {
   const res = await fetch(`${API}${path}`, {

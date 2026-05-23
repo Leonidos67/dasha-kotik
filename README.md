@@ -4,15 +4,15 @@
 
 ## Стек
 
-- **Frontend:** React (Vite)
-- **Backend:** Express + MongoDB (Mongoose)
+- **Frontend:** React (Vite) → [Vercel](https://vercel.com)
+- **Backend:** Express + MongoDB → [Render](https://render.com) + [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 - **Старт:** день 1 = **25.05.2026**
 
-## Быстрый старт
+## Быстрый старт (локально)
 
-1. Установи [MongoDB](https://www.mongodb.com/try/download/community) и запусти локально.
+1. MongoDB локально или Atlas.
 
-2. В корне проекта:
+2. Установка:
 
 ```bash
 npm install
@@ -20,46 +20,90 @@ cd server && npm install && cd ..
 cd client && npm install && cd ..
 ```
 
-3. Скопируй `server/.env.example` → `server/.env` и поменяй пароли:
+3. `server/.env.example` → `server/.env`, поменяй пароли.
 
-- `ADMIN_PASSWORD` — для входа Лёни
-- `DASHA_PASSWORD` — для входа Даши
-
-4. Заполни базу заданиями:
+4. Сид:
 
 ```bash
 npm run seed
 ```
 
-5. Запуск в разработке:
+5. Разработка:
 
 ```bash
 npm run dev
 ```
 
-- Даша: http://localhost:5173 (вкладка «Даша»)
-- Лёня: http://localhost:5173 → вкладка «Лёня» → админка
+- Даша / Лёня: http://localhost:5173 (прокси `/api` → `:3001`)
+
+## Деплой: Vercel + Render
+
+**Да, сервер логично ставить на Render** (или Railway/Fly). Vercel — только статика React; Express с MongoDB и загрузками на Vercel Serverless неудобен.
+
+### 1. MongoDB Atlas
+
+- Создай кластер, пользователя, строку подключения с именем БД: `.../dasha-moscow`
+- **Network Access:** добавь `0.0.0.0/0` (иначе Render не подключится)
+- Один раз засей прод:
+
+```bash
+cd server
+# MONGODB_URI из Atlas в .env
+npm run seed
+```
+
+### 2. Render (API)
+
+1. [dashboard.render.com](https://dashboard.render.com) → **New Web Service** → репозиторий GitHub
+2. **Root Directory:** `server`
+3. **Build:** `npm install` · **Start:** `npm start`
+4. Переменные (см. `server/.env.example`):
+
+| Переменная | Значение |
+|------------|----------|
+| `NODE_ENV` | `production` |
+| `MONGODB_URI` | строка Atlas |
+| `JWT_SECRET` | длинная случайная строка |
+| `ADMIN_PASSWORD` / `DASHA_PASSWORD` | ваши пароли |
+| `CLIENT_URL` | `https://твой-проект.vercel.app` (после Vercel; preview можно через запятую) |
+| `API_PUBLIC_URL` | `https://твой-сервис.onrender.com` |
+| `START_DATE` | `2026-05-25` |
+| `UNLOCK_ALL_DAYS` | `false` |
+
+Можно импортировать `render.yaml` из корня репо.
+
+**Загрузки:** файлы в `server/uploads/` на бесплатном Render **сбрасываются при редеплое**. Для долгого хранения позже — S3/GridFS.
+
+### 3. Vercel (фронт)
+
+1. Import репозитория → **Root Directory:** `client`
+2. Framework: Vite (определится сам)
+3. **Environment variable:**
+
+```
+VITE_API_URL=https://твой-сервис.onrender.com
+```
+
+4. Deploy → скопируй URL и пропиши его в `CLIENT_URL` на Render → **Manual Deploy** API (или перезапуск).
+
+### 4. Проверка
+
+- `https://api.onrender.com/api/health` → `{ "ok": true }`
+- Логин Даши/Лёни с Vercel-домена (куки `SameSite=None` в production)
+- Отправка фото → в админке превью открывается
 
 ## Как это работает
 
 - Каждый день открывается по дате от `START_DATE`.
-- У дня несколько заданий; под каждым кнопка **«Леня! Зая! Я сделала»**.
-- Лёня в админке видит отчёты (фото, голос, текст, скрины) и жмёт ✓.
-- Когда **все** задания дня подтверждены — подарок появляется у Даши во вкладке **«Подарки»**.
-- Тексты подарков и заданий редактируются в админке → **«Подарки и задания»** → сохраняются в MongoDB.
+- Задания → **«Как нехуй сделаю, Зая!»** → отчёт Лёне.
+- После подтверждения всех заданий дня — подарок во вкладке **«Подарки»**.
+- Тексты редактируются в админке → **«Подарки и задания»**.
 
-## Продакшен
+## Локальный прод-сборка (всё с одного порта)
 
 ```bash
 npm run build
-npm start
+SERVE_CLIENT=true npm start
 ```
 
-Сервер отдаёт собранный клиент с порта `3001`.
-
-## Пароли по умолчанию (смени в `.env`)
-
-| Роль  | Переменная       | Значение в dev `.env` |
-|-------|------------------|------------------------|
-| Даша  | `DASHA_PASSWORD` | `dasha-zay2026`        |
-| Лёня  | `ADMIN_PASSWORD` | `lenya2026`            |
+Сервер отдаёт `client/dist` с `:3001` (без Vercel).

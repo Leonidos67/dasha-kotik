@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config.js';
+import { corsOrigin } from './utils/cors.js';
 import authRoutes from './routes/auth.js';
 import daysRoutes from './routes/days.js';
 import submissionsRoutes from './routes/submissions.js';
@@ -13,9 +14,11 @@ import adminRoutes from './routes/admin.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(
   cors({
-    origin: config.clientUrl,
+    origin: corsOrigin,
     credentials: true,
   })
 );
@@ -29,20 +32,23 @@ app.use('/api/submissions', submissionsRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
+app.get('/', (_req, res) => res.json({ ok: true, service: 'dasha-moscow-api' }));
 
-const clientDist = path.join(__dirname, '..', 'client', 'dist');
-app.use(express.static(clientDist));
-app.get(/^(?!\/api).*/, (_req, res) => {
-  res.sendFile(path.join(clientDist, 'index.html'), (err) => {
-    if (err) res.status(404).send('Client not built. Run npm run build in client.');
+if (config.serveClient) {
+  const clientDist = path.join(__dirname, '..', 'client', 'dist');
+  app.use(express.static(clientDist));
+  app.get(/^(?!\/api).*/, (_req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'), (err) => {
+      if (err) res.status(404).send('Client not built. Run npm run build in client.');
+    });
   });
-});
+}
 
 mongoose
   .connect(config.mongoUri, { serverSelectionTimeoutMS: 10000 })
   .then(() => {
-    app.listen(config.port, () => {
-      console.log(`Server http://localhost:${config.port}`);
+    app.listen(config.port, '0.0.0.0', () => {
+      console.log(`Server listening on port ${config.port}`);
     });
   })
   .catch((err) => {

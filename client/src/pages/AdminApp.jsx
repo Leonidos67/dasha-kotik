@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '../api';
+import { api, mediaUrl } from '../api';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminApp() {
@@ -93,21 +93,22 @@ export default function AdminApp() {
                   </td>
                   <td className="submission-preview">
                     {s.text && <p>{s.text}</p>}
-                    {s.files?.map((f) =>
-                      f.mimeType?.startsWith('image/') ? (
-                        <a key={f.url} href={f.url} target="_blank" rel="noreferrer">
-                          <img src={f.url} alt="" />
+                    {s.files?.map((f) => {
+                      const url = mediaUrl(f.url);
+                      return f.mimeType?.startsWith('image/') ? (
+                        <a key={url} href={url} target="_blank" rel="noreferrer">
+                          <img src={url} alt="" />
                         </a>
                       ) : f.mimeType?.startsWith('video/') ? (
-                        <video key={f.url} src={f.url} controls />
+                        <video key={url} src={url} controls />
                       ) : f.mimeType?.startsWith('audio/') ? (
-                        <audio key={f.url} src={f.url} controls />
+                        <audio key={url} src={url} controls />
                       ) : (
-                        <a key={f.url} href={f.url} target="_blank" rel="noreferrer">
+                        <a key={url} href={url} target="_blank" rel="noreferrer">
                           Файл
                         </a>
-                      )
-                    )}
+                      );
+                    })}
                   </td>
                   <td>
                     <span className={`status-chip ${s.status}`}>{s.status}</span>
