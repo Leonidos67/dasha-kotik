@@ -21,9 +21,9 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <h1>Зайка 💕</h1>
-      <p>31 день — Москва и обратно в Сочи</p>
+      {/* <p>31 день - Москва и обратно в Сочи</p> */}
 
-      <div className="tabs" style={{ maxWidth: 320, marginTop: '1.5rem' }}>
+      <div className="tabs" style={{ maxWidth: 320, marginTop: '1rem' }}>
         <button type="button" className={mode === 'dasha' ? 'active' : ''} onClick={() => setMode('dasha')}>
           Даша
         </button>
