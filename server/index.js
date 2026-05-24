@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.js';
 import daysRoutes from './routes/days.js';
 import submissionsRoutes from './routes/submissions.js';
 import adminRoutes from './routes/admin.js';
+import coinsRoutes from './routes/coins.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -30,6 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/days', daysRoutes);
 app.use('/api/submissions', submissionsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/coins', coinsRoutes);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/', (_req, res) => res.json({ ok: true, service: 'dasha-moscow-api' }));

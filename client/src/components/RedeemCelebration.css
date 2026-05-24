@@ -1,0 +1,111 @@
+.redeem-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 15, 31, 0.92);
+  animation: redeem-fade-in 0.4s ease-out;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.redeem-celebration__glow {
+  position: absolute;
+  width: min(90vw, 320px);
+  height: min(90vw, 320px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 209, 102, 0.45) 0%, transparent 70%);
+  animation: redeem-glow-pulse 1.2s ease-in-out infinite;
+}
+
+.redeem-celebration__title {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 8vw, 2.5rem);
+  color: var(--gold);
+  animation: redeem-title-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.redeem-celebration__sub {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: var(--accent-soft);
+  animation: redeem-sub-in 0.8s ease-out 0.2s both;
+}
+
+.redeem-celebration__particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.redeem-celebration__particle {
+  position: absolute;
+  bottom: -2rem;
+  font-size: 1.5rem;
+  animation: redeem-float-up 2.2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes redeem-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes redeem-glow-pulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes redeem-title-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes redeem-sub-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes redeem-float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-110vh) scale(1.1) rotate(12deg);
+  }
+}

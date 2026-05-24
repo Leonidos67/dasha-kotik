@@ -98,6 +98,17 @@ textarea {
   color: #fff;
 }
 
+.tabs--three button {
+  font-size: 0.72rem;
+  padding: 0.55rem 0.35rem;
+}
+
+@media (min-width: 380px) {
+  .tabs--three button {
+    font-size: 0.8rem;
+  }
+}
+
 .tabs button .badge {
   display: inline-block;
   min-width: 18px;
@@ -109,6 +120,19 @@ textarea {
   border-radius: 50%;
   margin-left: 4px;
   vertical-align: middle;
+}
+
+.tab-coins {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--gold);
+  margin-top: 2px;
+  line-height: 1;
+}
+
+.tabs button.active .tab-coins {
+  color: #fff;
 }
 
 /* legacy admin day picker */
@@ -231,6 +255,19 @@ textarea {
   color: var(--gold);
 }
 
+.coin-shop-card {
+  cursor: default;
+}
+
+.coin-shop-card--active {
+  border-color: var(--gold);
+  box-shadow: 0 0 28px rgba(255, 209, 102, 0.35);
+}
+
+.coin-shop-card--locked {
+  opacity: 0.92;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -345,12 +382,10 @@ textarea {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.submission-preview img,
-.submission-preview video,
-.submission-preview audio {
-  max-width: 120px;
-  border-radius: 8px;
-  margin-top: 0.25rem;
+.submission-preview__text {
+  margin-bottom: 0.35rem;
+  line-height: 1.45;
+  max-width: 280px;
 }
 
 .edit-block {

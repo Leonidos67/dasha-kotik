@@ -50,6 +50,9 @@ export const api = {
   markGiftSeen: (dayNumber) =>
     request(`/submissions/gifts/${dayNumber}/seen`, { method: 'POST' }),
 
+  coins: () => request('/coins'),
+  redeemDay5CoinGift: () => request('/coins/redeem-day5-gift', { method: 'POST' }),
+
   adminSubmissions: () => request('/submissions/admin/all'),
   approve: (id, status) =>
     request(`/submissions/${id}/approve`, {

@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import BannerMascot from './components/BannerMascot';
 import LoginPage from './pages/LoginPage';
 import DashaApp from './pages/DashaApp';
 import AdminApp from './pages/AdminApp';
@@ -16,18 +15,11 @@ export default function App() {
   const { role, loading } = useAuth();
 
   if (loading) {
-    return (
-      <>
-        <BannerMascot variant="fixed" />
-        <div className="login-page">Загрузка…</div>
-      </>
-    );
+    return <div className="login-page">Загрузка…</div>;
   }
 
   return (
-    <>
-      <BannerMascot variant="fixed" />
-      <Routes>
+    <Routes>
       <Route
         path="/"
         element={
@@ -57,6 +49,5 @@ export default function App() {
         }
       />
       </Routes>
-    </>
   );
 }

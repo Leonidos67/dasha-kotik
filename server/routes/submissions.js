@@ -9,6 +9,8 @@ import { authRequired } from '../middleware/auth.js';
 import { config } from '../config.js';
 import { publicUploadUrl } from '../utils/uploadUrl.js';
 import { getCurrentDayNumber } from '../utils/dayNumber.js';
+import { getCoinState, getWallet } from '../utils/coins.js';
+import { buildGiftsList } from '../utils/gifts.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadPath = path.join(__dirname, '..', config.uploadDir);
@@ -35,7 +37,7 @@ const router = Router();
 router.post(
   '/',
   authRequired(['dasha']),
-  upload.array('files', 5),
+  upload.array('files', 10),
   async (req, res) => {
     const { dayNumber, taskId, text } = req.body;
     const dn = Number(dayNumber);
@@ -102,38 +104,23 @@ router.patch('/:id/approve', authRequired(['admin']), async (req, res) => {
 
 router.post('/gifts/:dayNumber/seen', authRequired(['dasha']), async (req, res) => {
   const dayNumber = Number(req.params.dayNumber);
+  const wallet = await getWallet();
+  if (dayNumber === 5 && wallet.day5CoinGiftClaimed) {
+    wallet.day5CoinGiftSeen = true;
+    await wallet.save();
+  }
   await Submission.updateMany({ dayNumber }, { giftSeen: true });
   res.json({ ok: true });
 });
 
-router.get('/gifts', authRequired(['dasha', 'admin']), async (req, res) => {
-  const days = await Day.find().sort({ dayNumber: 1 }).lean();
-  const submissions = await Submission.find().lean();
-
-  const gifts = days
-    .map((day) => {
-      const taskIds = day.tasks.map((t) => t._id.toString());
-      const daySubs = submissions.filter((s) => s.dayNumber === day.dayNumber);
-      const allApproved =
-        taskIds.length > 0 &&
-        taskIds.every((id) =>
-          daySubs.some((s) => s.taskId.toString() === id && s.status === 'approved')
-        );
-      if (!allApproved) return null;
-
-      const seen = daySubs.every((s) => s.giftSeen);
-      return {
-        dayNumber: day.dayNumber,
-        gift: day.gift,
-        isBonus: day.isBonus,
-        isFinale: day.isFinale,
-        seen,
-        unlockedAt: daySubs[0]?.updatedAt,
-      };
-    })
-    .filter(Boolean);
-
-  res.json({ gifts });
+router.get('/gifts', authRequired(['dasha', 'admin']), async (_req, res) => {
+  const { gifts } = await buildGiftsList();
+  const coins = await getCoinState();
+  res.json({
+    gifts,
+    coinShop: coins.day5CoinGift,
+    coinsBalance: coins.balance,
+  });
 });
 
 router.get('/admin/all', authRequired(['admin']), async (req, res) => {

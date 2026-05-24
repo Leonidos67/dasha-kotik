@@ -1,0 +1,115 @@
+.media-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.media-gallery--compact {
+  gap: 0.35rem;
+}
+
+.media-gallery__item {
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.media-gallery__item--image {
+  display: block;
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.media-gallery__item--image:hover {
+  transform: scale(1.03);
+}
+
+.media-gallery__item--image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.media-gallery--compact .media-gallery__item--image {
+  width: 56px;
+  height: 56px;
+}
+
+.media-gallery__item--video,
+.media-gallery__item--audio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  min-width: 200px;
+  max-width: 100%;
+  flex: 1 1 200px;
+}
+
+.media-gallery__item--compact.media-gallery__item--video,
+.media-gallery__item--compact.media-gallery__item--audio {
+  min-width: 0;
+  flex: 1 1 100%;
+  padding: 0.4rem;
+}
+
+.media-gallery__item--video video {
+  width: 100%;
+  max-height: 160px;
+  border-radius: 6px;
+  background: #000;
+}
+
+.media-gallery__item--audio {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.media-gallery__audio-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.media-gallery__item--audio audio {
+  flex: 1;
+  min-width: 140px;
+  height: 36px;
+}
+
+.media-gallery__caption {
+  font-size: 0.7rem;
+  color: var(--muted);
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-gallery__item--file {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--accent-soft);
+}
+
+.submission-preview .media-gallery {
+  margin-top: 0.35rem;
+}
+
+.submission-preview .media-gallery__item--video,
+.submission-preview .media-gallery__item--audio {
+  min-width: 160px;
+  max-width: 220px;
+}
+
+.task-body__media .media-gallery {
+  margin-top: 0.65rem;
+}

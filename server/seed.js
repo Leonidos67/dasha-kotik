@@ -16,27 +16,33 @@ const DAYS_DATA = [
   {
     dayNumber: 1,
     title: 'День 1 — старт',
-    gift: { title: 'Голосовое «доброе утро, зай»', description: 'Лёня запишет тебе голосовое, как только увидит твоё небо.' },
+    gift: { title: 'секрет', description: 'Лёня запишет тебе голосовое, как только увидит твоё небо.' },
     tasks: [
       { title: 'Сфоткать утреннее небо в Москве', description: 'Прямо сейчас, не из галереи.', submissionType: 'photo' },
       { title: 'Одно слово про сегодня', description: 'Как ты себя чувствуешь — одним словом.', submissionType: 'text' },
-      { title: 'Сфоткать утренний свет на стене', description: 'Красиво, по-твоему.', submissionType: 'photo' },
+      {
+        title: 'Начать учить песню «Скучаешь» (NEWLIGHTCHILD)',
+        description: 'Послушай трек и начни разбирать слова. Напиши сюда, с чего начала.',
+        submissionType: 'text',
+      },
     ],
   },
   {
     dayNumber: 2,
     gift: { title: 'Мем дня от Лёни', description: 'Смешная картинка специально для тебя.' },
     tasks: [
-      { title: 'Найти что-то красное на улице', description: 'Сфоткать.', submissionType: 'photo' },
+      {
+        title: 'Выучить песню «Скучаешь» (NEWLIGHTCHILD)',
+        description: 'Запиши голосовое, где ты её поёшь, и отправь Лёне в Telegram. Сюда прикрепи то же голосовое.',
+        submissionType: 'voice',
+      },
       { title: 'Голосовое 15 секунд', description: '«Лёня, скучаю, потому что…»', submissionType: 'voice' },
-      { title: 'Сфоткать билет на метро', description: 'Или проездной — что есть.', submissionType: 'photo' },
     ],
   },
   {
     dayNumber: 3,
     gift: { title: 'Плейлист на вечер', description: '5 песен, под которые думать о нас.' },
     tasks: [
-      { title: 'Прогулка 10 минут', description: 'Запиши на Apple Watch как прогулку.', submissionType: 'workout' },
       { title: 'Селфи: я на улице, Москва', description: 'Можно смешное.', submissionType: 'photo' },
       { title: 'Сфоткать 11 этаж подъезда', description: 'Со всех ракурсов)', submissionType: 'photo' },
     ],
@@ -46,16 +52,18 @@ const DAYS_DATA = [
     gift: { title: 'Комплимент-расписка', description: 'Цифровая открытка «ты молодец».' },
     tasks: [
       { title: 'Два предмета', description: 'Один напоминает обо мне, другой — о тебе. Фото обоих.', submissionType: 'photo' },
-      { title: 'Лужа с отражением неба', description: 'Если нет луж — любое отражение.', submissionType: 'photo' },
+      {
+        title: 'Прослушать 3+ песни NEWLIGHTCHILD',
+        description: 'Альбом NIGHT FOR EVER — минимум 3 трека. Напиши, какие понравились.',
+        submissionType: 'text',
+      },
     ],
   },
   {
     dayNumber: 5,
     gift: { title: 'Заказ кофе/чая', description: 'Лёня оплатит доставку в любимое место.' },
     tasks: [
-      { title: 'Быстрая ходьба 5 минут', description: 'Скрин тренировки с Apple Watch.', submissionType: 'workout' },
       { title: '10 000 шагов', description: 'Скрин с часов.', submissionType: 'workout' },
-      { title: 'Сфоткать свои часы в моменте', description: '', submissionType: 'photo' },
     ],
   },
   {

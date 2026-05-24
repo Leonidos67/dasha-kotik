@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useDayData } from '../hooks/useDayData';
 import SubmitModal from '../components/SubmitModal';
 import GiftsTab from '../components/GiftsTab';
+import CoinsTab from '../components/CoinsTab';
 import DayPicker from '../components/DayPicker';
 import DayTasks from '../components/DayTasks';
 
@@ -21,6 +22,7 @@ export default function DashaApp() {
   const [selectedDay, setSelectedDay] = useState(null);
   const [submitTask, setSubmitTask] = useState(null);
   const [unseenGifts, setUnseenGifts] = useState(0);
+  const [coinsBalance, setCoinsBalance] = useState(null);
   const [booting, setBooting] = useState(true);
 
   const { dayData, refreshDay } = useDayData(selectedDay);
@@ -36,8 +38,9 @@ export default function DashaApp() {
   }, []);
 
   const loadGiftsBadge = useCallback(async () => {
-    const { gifts } = await api.gifts();
+    const { gifts, coinsBalance: balance } = await api.gifts();
     setUnseenGifts(gifts.filter((g) => !g.seen).length);
+    setCoinsBalance(balance);
   }, []);
 
   useEffect(() => {
@@ -114,9 +117,13 @@ export default function DashaApp() {
         </p>
       </header>
 
-      <nav className="tabs">
+      <nav className="tabs tabs--three">
         <button type="button" className={tab === 'today' ? 'active' : ''} onClick={() => setTab('today')}>
           Задания
+        </button>
+        <button type="button" className={tab === 'coins' ? 'active' : ''} onClick={() => setTab('coins')}>
+          Мои монетки
+          {coinsBalance != null && <span className="tab-coins">{coinsBalance}🪙</span>}
         </button>
         <button type="button" className={tab === 'gifts' ? 'active' : ''} onClick={() => setTab('gifts')}>
           Подарки
@@ -126,6 +133,8 @@ export default function DashaApp() {
 
       {tab === 'gifts' ? (
         <GiftsTab onUpdate={loadGiftsBadge} />
+      ) : tab === 'coins' ? (
+        <CoinsTab />
       ) : (
         selectedDay && (
           <>

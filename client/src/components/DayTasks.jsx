@@ -60,15 +60,6 @@ export default function DayTasks({ dayData, selectedDay, onSubmit }) {
         {dayData.isFinale && ' — ты в Сочи!'}
       </p>
 
-      {dayData.gift && (
-        <p className="day-gift-hint">
-          🎁 Подарок дня: <strong>{dayData.gift.title}</strong>
-          {dayData.giftStatus?.unlocked
-            ? ' — смотри во вкладке «Подарки»'
-            : ' — откроется после проверки Лёни'}
-        </p>
-      )}
-
       <ul className="task-list">
         {dayData.tasks?.map((task, i) => (
           <li key={task._id}>

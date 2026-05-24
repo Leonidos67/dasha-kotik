@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import './index.css';
 import './components/TaskCard.css';
 import './components/DayReveal.css';
+import './components/MediaGallery.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

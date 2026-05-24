@@ -1,0 +1,42 @@
+.hug-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #4a2858 0%, #1a0f1f 70%);
+  animation: hug-overlay-in 0.35s ease-out;
+}
+
+.hug-overlay__text {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 10vw, 3.25rem);
+  color: var(--text);
+  text-align: center;
+  letter-spacing: 0.02em;
+  animation: hug-text-pulse 1s ease-in-out infinite;
+  padding: 0 1.5rem;
+  min-width: 12ch;
+}
+
+@keyframes hug-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hug-text-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.92;
+  }
+}

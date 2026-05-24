@@ -1,3 +1,5 @@
+import MediaGallery from './MediaGallery';
+
 const STATUS = {
   pending: { label: 'Ждём проверки Лёни', class: 'pending' },
   approved: { label: 'Зай, ты молодец ✓', class: 'approved' },
@@ -26,7 +28,17 @@ export default function TaskCard({ task, index, onSubmit }) {
             {status && (
               <span className={`status-chip ${STATUS[status]?.class}`}>{STATUS[status]?.label}</span>
             )}
-            {sub?.files?.length > 0 && <p className="task-body__sent">Отчёт отправлен ✓</p>}
+            {sub?.files?.length > 0 && (
+              <>
+                <p className="task-body__sent">
+                  Отчёт отправлен ✓ · {sub.files.length}{' '}
+                  {sub.files.length === 1 ? 'файл' : sub.files.length < 5 ? 'файла' : 'файлов'}
+                </p>
+                <div className="task-body__media">
+                  <MediaGallery files={sub.files} compact />
+                </div>
+              </>
+            )}
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, mediaUrl } from '../api';
+import { api } from '../api';
+import MediaGallery from '../components/MediaGallery';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminApp() {
@@ -92,23 +93,8 @@ export default function AdminApp() {
                     <small style={{ color: 'var(--muted)' }}>{s.taskType}</small>
                   </td>
                   <td className="submission-preview">
-                    {s.text && <p>{s.text}</p>}
-                    {s.files?.map((f) => {
-                      const url = mediaUrl(f.url);
-                      return f.mimeType?.startsWith('image/') ? (
-                        <a key={url} href={url} target="_blank" rel="noreferrer">
-                          <img src={url} alt="" />
-                        </a>
-                      ) : f.mimeType?.startsWith('video/') ? (
-                        <video key={url} src={url} controls />
-                      ) : f.mimeType?.startsWith('audio/') ? (
-                        <audio key={url} src={url} controls />
-                      ) : (
-                        <a key={url} href={url} target="_blank" rel="noreferrer">
-                          Файл
-                        </a>
-                      );
-                    })}
+                    {s.text && <p className="submission-preview__text">{s.text}</p>}
+                    <MediaGallery files={s.files} />
                   </td>
                   <td>
                     <span className={`status-chip ${s.status}`}>{s.status}</span>

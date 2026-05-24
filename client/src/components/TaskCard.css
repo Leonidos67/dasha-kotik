@@ -97,16 +97,6 @@
   }
 }
 
-.day-gift-hint {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
-
-.day-gift-hint strong {
-  color: var(--gold);
-}
-
 .day-tasks-loading {
   display: flex;
   justify-content: center;

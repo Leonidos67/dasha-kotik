@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import BannerMascot from '../components/BannerMascot';
 
 export default function LoginPage() {
   const { loginDasha, loginAdmin } = useAuth();
@@ -19,7 +20,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-page">
+    <>
+      <BannerMascot variant="fixed" />
+      <div className="login-page">
       <h1>Зайка 💕</h1>
       {/* <p>31 день - Москва и обратно в Сочи</p> */}
 
@@ -46,5 +49,6 @@ export default function LoginPage() {
         </button>
       </form>
     </div>
+    </>
   );
 }
