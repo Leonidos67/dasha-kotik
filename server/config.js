@@ -9,7 +9,12 @@ export const config = {
   mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/dasha-moscow',
   jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
   adminPassword: process.env.ADMIN_PASSWORD || 'lenya-admin',
-  dashaPassword: process.env.DASHA_PASSWORD || 'dasha-zay',
+  /** Роль и кошелёк игрока (бывш. «Даша» → «Дашенька») */
+  playerRole: 'dashenka',
+  playerName: 'Дашенька',
+  walletUserId: 'dashenka',
+  playerPassword:
+    process.env.DASHENKA_PASSWORD || process.env.DASHA_PASSWORD || 'dasha-zay',
   /** Один URL или несколько через запятую (Vercel preview + production) */
   clientUrls: (process.env.CLIENT_URL || defaultClient)
     .split(',')

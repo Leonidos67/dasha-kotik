@@ -1,3 +1,4 @@
+import { config } from '../config.js';
 import { Day } from '../models/Day.js';
 import { Submission } from '../models/Submission.js';
 import { Wallet } from '../models/Wallet.js';
@@ -8,7 +9,7 @@ export const COIN_MAX_EARN = 10;
 export const COIN_DAY5_REDEEM_COST = 10;
 export const COIN_DAY5_REDEEM = 5;
 export async function getWallet() {
-  return Wallet.findOneAndUpdate({ userId: 'dasha' }, {}, { upsert: true, new: true });
+  return Wallet.findOneAndUpdate({ userId: config.walletUserId }, {}, { upsert: true, new: true });
 }
 
 export async function getApprovedSubmissions1to5() {

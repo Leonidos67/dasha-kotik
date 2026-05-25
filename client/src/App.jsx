@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import DashaApp from './pages/DashaApp';
+import { PLAYER_ROLE } from './constants';
 import AdminApp from './pages/AdminApp';
 
 function Protected({ role, children }) {
@@ -23,7 +24,7 @@ export default function App() {
       <Route
         path="/"
         element={
-          role === 'dasha' ? (
+          role === PLAYER_ROLE ? (
             <Navigate to="/app" replace />
           ) : role === 'admin' ? (
             <Navigate to="/admin" replace />
@@ -35,7 +36,7 @@ export default function App() {
       <Route
         path="/app/*"
         element={
-          <Protected role="dasha">
+          <Protected role={PLAYER_ROLE}>
             <DashaApp />
           </Protected>
         }

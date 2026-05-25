@@ -64,7 +64,7 @@ npm run seed
 | `NODE_ENV` | `production` |
 | `MONGODB_URI` | строка Atlas |
 | `JWT_SECRET` | длинная случайная строка |
-| `ADMIN_PASSWORD` / `DASHA_PASSWORD` | ваши пароли |
+| `ADMIN_PASSWORD` / `DASHENKA_PASSWORD` | пароли Лёни и Дашеньки |
 | `CLIENT_URL` | `https://твой-проект.vercel.app` (после Vercel; preview можно через запятую) |
 | `API_PUBLIC_URL` | `https://твой-сервис.onrender.com` |
 | `START_DATE` | `2026-05-25` |

@@ -7,15 +7,16 @@ import {
   getCoinState,
   getWallet,
 } from '../utils/coins.js';
+import { ADMIN_ROLE, PLAYER_ROLE } from '../utils/roles.js';
 
 const router = Router();
 
-router.get('/', authRequired(['dasha', 'admin']), async (_req, res) => {
+router.get('/', authRequired([PLAYER_ROLE, ADMIN_ROLE]), async (_req, res) => {
   const state = await getCoinState();
   res.json(state);
 });
 
-router.post('/redeem-day5-gift', authRequired(['dasha']), async (_req, res) => {
+router.post('/redeem-day5-gift', authRequired([PLAYER_ROLE]), async (_req, res) => {
   const wallet = await getWallet();
   const balance = await getCoinBalance();
 

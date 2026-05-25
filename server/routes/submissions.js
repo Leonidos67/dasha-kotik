@@ -11,6 +11,7 @@ import { publicUploadUrl } from '../utils/uploadUrl.js';
 import { getCurrentDayNumber } from '../utils/dayNumber.js';
 import { getCoinState, getWallet } from '../utils/coins.js';
 import { buildGiftsList } from '../utils/gifts.js';
+import { ADMIN_ROLE, PLAYER_ROLE } from '../utils/roles.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadPath = path.join(__dirname, '..', config.uploadDir);
@@ -36,7 +37,7 @@ const router = Router();
 
 router.post(
   '/',
-  authRequired(['dasha']),
+  authRequired([PLAYER_ROLE]),
   upload.array('files', 10),
   async (req, res) => {
     const { dayNumber, taskId, text } = req.body;
@@ -102,7 +103,7 @@ router.patch('/:id/approve', authRequired(['admin']), async (req, res) => {
   res.json(submission);
 });
 
-router.post('/gifts/:dayNumber/seen', authRequired(['dasha']), async (req, res) => {
+router.post('/gifts/:dayNumber/seen', authRequired([PLAYER_ROLE]), async (req, res) => {
   const dayNumber = Number(req.params.dayNumber);
   const wallet = await getWallet();
   if (dayNumber === 5 && wallet.day5CoinGiftClaimed) {
@@ -113,7 +114,7 @@ router.post('/gifts/:dayNumber/seen', authRequired(['dasha']), async (req, res) 
   res.json({ ok: true });
 });
 
-router.get('/gifts', authRequired(['dasha', 'admin']), async (_req, res) => {
+router.get('/gifts', authRequired([PLAYER_ROLE, ADMIN_ROLE]), async (_req, res) => {
   const { gifts } = await buildGiftsList();
   const coins = await getCoinState();
   res.json({

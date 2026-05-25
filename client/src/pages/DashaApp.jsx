@@ -17,7 +17,7 @@ function formatDate(dateStr) {
 }
 
 export default function DashaApp() {
-  const { logout } = useAuth();
+  const { logout, playerName } = useAuth();
   const [tab, setTab] = useState('today');
   const [currentDay, setCurrentDay] = useState(0);
   const [selectedDay, setSelectedDay] = useState(null);
@@ -154,7 +154,7 @@ export default function DashaApp() {
   return (
     <div className="app-shell">
       <header className="header">
-        <h1>Привет, зай 🐰</h1>
+        <h1>Привет, {playerName} 🐰</h1>
         <p>
           {tab === 'today' && dayData?.date
             ? formatDate(dayData.date)
