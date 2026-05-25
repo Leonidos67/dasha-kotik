@@ -1,4 +1,5 @@
-const STORAGE_KEY = 'dasha-moscow-intro-days';
+/** Меняй суффикс (v2, v3…), чтобы снова показать заставки дней всем в браузере */
+const STORAGE_KEY = 'dasha-moscow-intro-days-v2';
 
 function readSet() {
   try {

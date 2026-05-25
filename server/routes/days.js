@@ -3,6 +3,7 @@ import { Day } from '../models/Day.js';
 import { Submission } from '../models/Submission.js';
 import { authRequired } from '../middleware/auth.js';
 import { config } from '../config.js';
+import { COIN_DAY5_REDEEM } from '../utils/coins.js';
 import { getCurrentDayNumber } from '../utils/dayNumber.js';
 import {
   ADMIN_ROLE,
@@ -33,6 +34,11 @@ function resolveUserId(req) {
   return getUserIdForRole(role);
 }
 
+function giftForClient(day, isAdmin) {
+  if (isAdmin || day.dayNumber !== COIN_DAY5_REDEEM) return day.gift;
+  return null;
+}
+
 router.get('/meta', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), (_req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.json({
@@ -46,6 +52,7 @@ router.get('/meta', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), (_req, res) => 
 
 router.get('/:dayNumber', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (req, res) => {
   const dayNumber = Number(req.params.dayNumber);
+  const isAdmin = normalizeRole(req.user.role) === ADMIN_ROLE;
   const userId = resolveUserId(req);
   const day = await Day.findOne({ dayNumber }).lean();
   if (!day) return res.status(404).json({ error: 'День не найден' });
@@ -63,12 +70,14 @@ router.get('/:dayNumber', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (re
 
   res.json({
     ...day,
+    gift: giftForClient(day, isAdmin),
     tasks,
     giftStatus,
   });
 });
 
 router.get('/', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (req, res) => {
+  const isAdmin = normalizeRole(req.user.role) === ADMIN_ROLE;
   const userId = resolveUserId(req);
   const days = await Day.find().sort({ dayNumber: 1 }).lean();
   const submissions = await Submission.find({ userId }).lean();
@@ -80,7 +89,7 @@ router.get('/', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (req, res) =>
     isFinale: day.isFinale,
     title: day.title,
     taskCount: day.tasks.length,
-    gift: day.gift,
+    gift: giftForClient(day, isAdmin),
     giftStatus: giftStatusForDay(day, submissions),
   }));
 

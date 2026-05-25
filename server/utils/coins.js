@@ -10,6 +10,13 @@ export const COIN_MAX_EARN = 10;
 export const COIN_DAY5_REDEEM_COST = 10;
 export const COIN_DAY5_REDEEM = 5;
 
+/** Shown to player instead of DB gift text (keeps day-5 surprise secret). */
+export const DAY5_SURPRISE_GIFT = {
+  title: 'Сюрприз от Лёни 🎁',
+  description:
+    'Зай, ты заслужила! Лёня свяжется с тобой и всё устроит — это твой секретный подарок за монетки.',
+};
+
 export async function getWallet(role = PLAYER_ROLE) {
   const userId = getUserIdForRole(role);
   return Wallet.findOneAndUpdate({ userId }, {}, { upsert: true, new: true });
@@ -78,7 +85,7 @@ export async function getCoinState(role = PLAYER_ROLE) {
     canRedeem: balance >= COIN_DAY5_REDEEM_COST && !wallet.day5CoinGiftClaimed,
     redeemed: wallet.day5CoinGiftClaimed,
     seen: wallet.day5CoinGiftSeen,
-    gift: day5?.gift || null,
+    gift: wallet.day5CoinGiftClaimed ? DAY5_SURPRISE_GIFT : null,
     title: `Получить подарок за ${COIN_DAY5_REDEEM_COST} монет (5 день)`,
   };
 

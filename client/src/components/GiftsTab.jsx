@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import HugOverlay from './HugOverlay';
 import RedeemCelebration from './RedeemCelebration';
+import { giftForDisplay } from '../utils/giftDisplay';
 import './GiftsTab.css';
 
 function GiftModal({ gift, onClose, onHug }) {
+  const shown = giftForDisplay(gift);
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -13,8 +15,8 @@ function GiftModal({ gift, onClose, onHug }) {
       >
         <h2>🎁 Подарок за день {gift.dayNumber}</h2>
         {gift.unlockedViaCoins && <p className="gift-modal__badge">Получено за монетки</p>}
-        <h3 className="gift-modal__title">{gift.gift.title}</h3>
-        <p className="gift-modal__desc">{gift.gift.description}</p>
+        <h3 className="gift-modal__title">{shown?.title}</h3>
+        <p className="gift-modal__desc">{shown?.description}</p>
         {gift.isFinale && (
           <p className="gift-modal__finale">Зай, ты прошла весь месяц. Я тебя люблю. 💋</p>
         )}
@@ -75,7 +77,11 @@ export default function GiftsTab({ onUpdate }) {
       setCelebrating(true);
       setPendingGift({
         dayNumber: 5,
-        gift: coinShop?.gift,
+        gift: {
+          title: 'Сюрприз от Лёни 🎁',
+          description:
+            'Зай, ты заслужила! Лёня свяжется с тобой и всё устроит — это твой секретный подарок за монетки.',
+        },
         unlockedViaCoins: true,
         seen: false,
         isFinale: false,
@@ -110,7 +116,7 @@ export default function GiftsTab({ onUpdate }) {
           <p className="coin-shop-card__meta">
             У тебя {coinsBalance} из {coinShop.cost} монет
           </p>
-          {coinShop.gift && <p className="coin-shop-card__gift-title">{coinShop.gift.title}</p>}
+          <p className="coin-shop-card__gift-title">Сюрприз — узнаешь после обмена 💕</p>
           {shopError && <p className="error coin-shop-card__error">{shopError}</p>}
           <button
             type="button"
@@ -151,7 +157,7 @@ export default function GiftsTab({ onUpdate }) {
               {g.unlockedViaCoins && ' · за монетки'}
               {!g.seen && ' · НОВЫЙ'}
             </h3>
-            <p>{g.gift.title}</p>
+            <p>{giftForDisplay(g)?.title}</p>
           </div>
         ))
       )}
