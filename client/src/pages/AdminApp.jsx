@@ -88,6 +88,8 @@ export default function AdminApp() {
                 <tr key={s._id}>
                   <td>{s.dayNumber}</td>
                   <td>
+                    <small style={{ color: 'var(--gold)' }}>{s.userLabel || 'Даша'}</small>
+                    <br />
                     {s.taskTitle}
                     <br />
                     <small style={{ color: 'var(--muted)' }}>{s.taskType}</small>

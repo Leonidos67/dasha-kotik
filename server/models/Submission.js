@@ -12,6 +12,7 @@ const fileSchema = new mongoose.Schema(
 
 const submissionSchema = new mongoose.Schema(
   {
+    userId: { type: String, required: true, index: true, default: 'dasha' },
     dayNumber: { type: Number, required: true, index: true },
     taskId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
     text: { type: String, default: '' },
@@ -26,6 +27,6 @@ const submissionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-submissionSchema.index({ dayNumber: 1, taskId: 1 }, { unique: true });
+submissionSchema.index({ userId: 1, dayNumber: 1, taskId: 1 }, { unique: true });
 
 export const Submission = mongoose.model('Submission', submissionSchema);

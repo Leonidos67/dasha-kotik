@@ -1,12 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { api } from '../api';
-import { PLAYER_NAME, PLAYER_ROLE } from '../constants';
+import { PLAYER_NAME, PLAYER_ROLE, TEST_NAME, TEST_ROLE } from '../constants';
+import { clearAuthToken, setAuthToken } from '../utils/authToken';
 
 const AuthContext = createContext(null);
 
 function normalizeRole(role) {
-  if (role === 'dasha') return PLAYER_ROLE;
+  if (role === 'dashenka') return TEST_ROLE;
   return role;
+}
+
+function nameForRole(role) {
+  if (role === TEST_ROLE) return TEST_NAME;
+  if (role === PLAYER_ROLE) return PLAYER_NAME;
+  return '';
 }
 
 export function AuthProvider({ children }) {
@@ -20,10 +27,11 @@ export function AuthProvider({ children }) {
       .then((r) => {
         const nextRole = normalizeRole(r.role);
         setRole(nextRole);
-        if (r.name) setPlayerName(r.name);
+        setPlayerName(r.name || nameForRole(nextRole) || PLAYER_NAME);
         return nextRole;
       })
       .catch(() => {
+        clearAuthToken();
         setRole(null);
         return null;
       });
@@ -48,25 +56,39 @@ export function AuthProvider({ children }) {
     };
   }, [refreshSession]);
 
-  const loginDashenka = async (password) => {
-    const r = await api.loginDashenka(password);
-    setRole(normalizeRole(r.role));
-    if (r.name) setPlayerName(r.name);
+  const applyLogin = (r) => {
+    if (r.token) setAuthToken(r.token);
+    const nextRole = normalizeRole(r.role);
+    setRole(nextRole);
+    setPlayerName(r.name || nameForRole(nextRole));
+  };
+
+  const loginDasha = async (password) => {
+    applyLogin(await api.loginDasha(password));
+  };
+
+  const loginTest = async (password) => {
+    applyLogin(await api.loginTest(password));
   };
 
   const loginAdmin = async (password) => {
     const r = await api.loginAdmin(password);
+    if (r.token) setAuthToken(r.token);
     setRole(r.role);
   };
 
   const logout = async () => {
-    await api.logout();
-    setRole(null);
+    try {
+      await api.logout();
+    } finally {
+      clearAuthToken();
+      setRole(null);
+    }
   };
 
   return (
     <AuthContext.Provider
-      value={{ role, playerName, loading, loginDashenka, loginAdmin, logout, refreshSession }}
+      value={{ role, playerName, loading, loginDasha, loginTest, loginAdmin, logout, refreshSession }}
     >
       {children}
     </AuthContext.Provider>

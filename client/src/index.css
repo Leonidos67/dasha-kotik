@@ -98,7 +98,8 @@ textarea {
   color: #fff;
 }
 
-.tabs--three button {
+.tabs--three button,
+.tabs--login button {
   font-size: 0.72rem;
   padding: 0.55rem 0.35rem;
 }

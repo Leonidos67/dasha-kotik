@@ -7,18 +7,24 @@ import {
   getCoinState,
   getWallet,
 } from '../utils/coins.js';
-import { ADMIN_ROLE, PLAYER_ROLE } from '../utils/roles.js';
+import { ADMIN_ROLE, normalizeRole, PLAYER_ROLES } from '../utils/roles.js';
 
 const router = Router();
 
-router.get('/', authRequired([PLAYER_ROLE, ADMIN_ROLE]), async (_req, res) => {
-  const state = await getCoinState();
+function actorRole(req) {
+  return normalizeRole(req.user.role);
+}
+
+router.get('/', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (req, res) => {
+  const role = req.user.role === ADMIN_ROLE ? 'dasha' : actorRole(req);
+  const state = await getCoinState(role);
   res.json(state);
 });
 
-router.post('/redeem-day5-gift', authRequired([PLAYER_ROLE]), async (_req, res) => {
-  const wallet = await getWallet();
-  const balance = await getCoinBalance();
+router.post('/redeem-day5-gift', authRequired(PLAYER_ROLES), async (req, res) => {
+  const role = actorRole(req);
+  const wallet = await getWallet(role);
+  const balance = await getCoinBalance(role);
 
   if (wallet.day5CoinGiftClaimed) {
     return res.status(400).json({ error: 'Подарок за монетки уже получен' });
@@ -35,7 +41,7 @@ router.post('/redeem-day5-gift', authRequired([PLAYER_ROLE]), async (_req, res) 
   wallet.day5CoinGiftSeen = false;
   await wallet.save();
 
-  const state = await getCoinState();
+  const state = await getCoinState(role);
   res.json({
     ok: true,
     dayNumber: COIN_DAY5_REDEEM,

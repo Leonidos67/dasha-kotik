@@ -1,9 +1,9 @@
 import { Day } from '../models/Day.js';
 import { COIN_DAY5_REDEEM, getWallet } from './coins.js';
+import { getUserIdForRole, PLAYER_ROLE } from './roles.js';
 
-/** Только подарки, купленные за монетки (не за выполнение всех заданий дня). */
-export async function buildGiftsList() {
-  const wallet = await getWallet();
+export async function buildGiftsList(role = PLAYER_ROLE) {
+  const wallet = await getWallet(role);
   const gifts = [];
 
   if (wallet.day5CoinGiftClaimed) {

@@ -4,7 +4,12 @@ import { Submission } from '../models/Submission.js';
 import { authRequired } from '../middleware/auth.js';
 import { config } from '../config.js';
 import { getCurrentDayNumber } from '../utils/dayNumber.js';
-import { ADMIN_ROLE, PLAYER_ROLE } from '../utils/roles.js';
+import {
+  ADMIN_ROLE,
+  getUserIdForRole,
+  PLAYER_ROLES,
+  normalizeRole,
+} from '../utils/roles.js';
 
 const router = Router();
 
@@ -22,7 +27,13 @@ function giftStatusForDay(day, submissions) {
   return { allSubmitted, allApproved, unlocked: allApproved };
 }
 
-router.get('/meta', authRequired([PLAYER_ROLE, ADMIN_ROLE]), (_req, res) => {
+function resolveUserId(req) {
+  const role = normalizeRole(req.user.role);
+  if (role === ADMIN_ROLE) return getUserIdForRole('dasha');
+  return getUserIdForRole(role);
+}
+
+router.get('/meta', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), (_req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.json({
     currentDay: getCurrentDayNumber(),
@@ -33,12 +44,13 @@ router.get('/meta', authRequired([PLAYER_ROLE, ADMIN_ROLE]), (_req, res) => {
   });
 });
 
-router.get('/:dayNumber', authRequired([PLAYER_ROLE, ADMIN_ROLE]), async (req, res) => {
+router.get('/:dayNumber', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (req, res) => {
   const dayNumber = Number(req.params.dayNumber);
+  const userId = resolveUserId(req);
   const day = await Day.findOne({ dayNumber }).lean();
   if (!day) return res.status(404).json({ error: 'День не найден' });
 
-  const submissions = await Submission.find({ dayNumber }).lean();
+  const submissions = await Submission.find({ userId, dayNumber }).lean();
   const tasks = day.tasks.map((task) => {
     const sub = submissions.find((s) => s.taskId.toString() === task._id.toString());
     return {
@@ -56,9 +68,10 @@ router.get('/:dayNumber', authRequired([PLAYER_ROLE, ADMIN_ROLE]), async (req, r
   });
 });
 
-router.get('/', authRequired([PLAYER_ROLE, ADMIN_ROLE]), async (req, res) => {
+router.get('/', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (req, res) => {
+  const userId = resolveUserId(req);
   const days = await Day.find().sort({ dayNumber: 1 }).lean();
-  const submissions = await Submission.find().lean();
+  const submissions = await Submission.find({ userId }).lean();
 
   const result = days.map((day) => ({
     dayNumber: day.dayNumber,

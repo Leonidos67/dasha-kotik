@@ -1,15 +1,25 @@
-/** Fallback на Render, если на Vercel забыли VITE_API_URL (частая причина «Скоро…» на телефоне) */
+import { getAuthToken } from './utils/authToken';
+
 const API_BASE = (
   import.meta.env.VITE_API_URL ||
   (import.meta.env.PROD ? 'https://dasha-kotik-api.onrender.com' : '')
 ).replace(/\/$/, '');
 const API = `${API_BASE}/api`;
 
-/** Абсолютный URL для /uploads/... с Render */
 export function mediaUrl(path) {
   if (!path) return '';
   if (path.startsWith('http')) return path;
   return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
+function authHeaders(extra = {}, body) {
+  const headers = { ...extra };
+  if (!(body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+  const token = getAuthToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
 }
 
 async function request(path, options = {}) {
@@ -17,10 +27,7 @@ async function request(path, options = {}) {
     credentials: 'include',
     cache: 'no-store',
     ...options,
-    headers: {
-      ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
-      ...options.headers,
-    },
+    headers: authHeaders(options.headers, options.body),
   });
 
   const data = await res.json().catch(() => ({}));
@@ -30,8 +37,10 @@ async function request(path, options = {}) {
 
 export const api = {
   me: () => request('/auth/me'),
-  loginDashenka: (password) =>
-    request('/auth/dashenka', { method: 'POST', body: JSON.stringify({ password }) }),
+  loginDasha: (password) =>
+    request('/auth/dasha', { method: 'POST', body: JSON.stringify({ password }) }),
+  loginTest: (password) =>
+    request('/auth/test', { method: 'POST', body: JSON.stringify({ password }) }),
   loginAdmin: (password) =>
     request('/auth/admin', { method: 'POST', body: JSON.stringify({ password }) }),
   logout: () => request('/auth/logout', { method: 'POST' }),
@@ -45,6 +54,7 @@ export const api = {
       method: 'POST',
       credentials: 'include',
       cache: 'no-store',
+      headers: authHeaders({}, formData),
       body: formData,
     }).then(async (res) => {
       const data = await res.json();

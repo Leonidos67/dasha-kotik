@@ -21,6 +21,8 @@ app.use(
   cors({
     origin: corsOrigin,
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Type'],
   })
 );
 app.use(cookieParser());

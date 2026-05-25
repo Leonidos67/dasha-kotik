@@ -2,36 +2,41 @@ import { config } from '../config.js';
 import { Day } from '../models/Day.js';
 import { Submission } from '../models/Submission.js';
 import { Wallet } from '../models/Wallet.js';
+import { getUserIdForRole, normalizeRole, PLAYER_ROLE } from './roles.js';
 
 export const COIN_DAYS_FROM = 1;
 export const COIN_DAYS_TO = 5;
 export const COIN_MAX_EARN = 10;
 export const COIN_DAY5_REDEEM_COST = 10;
 export const COIN_DAY5_REDEEM = 5;
-export async function getWallet() {
-  return Wallet.findOneAndUpdate({ userId: config.walletUserId }, {}, { upsert: true, new: true });
+
+export async function getWallet(role = PLAYER_ROLE) {
+  const userId = getUserIdForRole(role);
+  return Wallet.findOneAndUpdate({ userId }, {}, { upsert: true, new: true });
 }
 
-export async function getApprovedSubmissions1to5() {
+export async function getApprovedSubmissions1to5(role = PLAYER_ROLE) {
+  const userId = getUserIdForRole(role);
   return Submission.find({
+    userId,
     status: 'approved',
     dayNumber: { $gte: COIN_DAYS_FROM, $lte: COIN_DAYS_TO },
   }).lean();
 }
 
-/** Заработано монет (макс. 10) за одобренные задания дней 1–5 */
-export async function getCoinsEarned() {
-  const approved = await getApprovedSubmissions1to5();
+export async function getCoinsEarned(role = PLAYER_ROLE) {
+  const approved = await getApprovedSubmissions1to5(role);
   return Math.min(approved.length, COIN_MAX_EARN);
 }
 
-export async function getCoinBalance() {
-  const wallet = await getWallet();
-  const earned = await getCoinsEarned();
+export async function getCoinBalance(role = PLAYER_ROLE) {
+  const wallet = await getWallet(role);
+  const earned = await getCoinsEarned(role);
   return Math.max(0, earned - wallet.coinsSpent);
 }
 
-export async function getCoinsBreakdown() {
+export async function getCoinsBreakdown(role = PLAYER_ROLE) {
+  const userId = getUserIdForRole(role);
   const days = await Day.find({
     dayNumber: { $gte: COIN_DAYS_FROM, $lte: COIN_DAYS_TO },
   })
@@ -39,6 +44,7 @@ export async function getCoinsBreakdown() {
     .lean();
 
   const submissions = await Submission.find({
+    userId,
     dayNumber: { $gte: COIN_DAYS_FROM, $lte: COIN_DAYS_TO },
   }).lean();
 
@@ -58,11 +64,11 @@ export async function getCoinsBreakdown() {
   });
 }
 
-export async function getCoinState() {
-  const wallet = await getWallet();
-  const earned = await getCoinsEarned();
+export async function getCoinState(role = PLAYER_ROLE) {
+  const wallet = await getWallet(role);
+  const earned = await getCoinsEarned(role);
   const balance = Math.max(0, earned - wallet.coinsSpent);
-  const breakdown = await getCoinsBreakdown();
+  const breakdown = await getCoinsBreakdown(role);
 
   const day5 = await Day.findOne({ dayNumber: COIN_DAY5_REDEEM }).lean();
 

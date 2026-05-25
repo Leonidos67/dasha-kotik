@@ -11,7 +11,12 @@ import { publicUploadUrl } from '../utils/uploadUrl.js';
 import { getCurrentDayNumber } from '../utils/dayNumber.js';
 import { getCoinState, getWallet } from '../utils/coins.js';
 import { buildGiftsList } from '../utils/gifts.js';
-import { ADMIN_ROLE, PLAYER_ROLE } from '../utils/roles.js';
+import {
+  ADMIN_ROLE,
+  getUserIdForRole,
+  PLAYER_ROLES,
+  normalizeRole,
+} from '../utils/roles.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadPath = path.join(__dirname, '..', config.uploadDir);
@@ -35,13 +40,19 @@ const upload = multer({
 
 const router = Router();
 
+function actorRole(req) {
+  return normalizeRole(req.user.role);
+}
+
 router.post(
   '/',
-  authRequired([PLAYER_ROLE]),
+  authRequired(PLAYER_ROLES),
   upload.array('files', 10),
   async (req, res) => {
     const { dayNumber, taskId, text } = req.body;
     const dn = Number(dayNumber);
+    const role = actorRole(req);
+    const userId = getUserIdForRole(role);
 
     const day = await Day.findOne({ dayNumber: dn });
     if (!day) return res.status(404).json({ error: 'День не найден' });
@@ -71,8 +82,9 @@ router.post(
     }));
 
     const submission = await Submission.findOneAndUpdate(
-      { dayNumber: dn, taskId },
+      { userId, dayNumber: dn, taskId },
       {
+        userId,
         dayNumber: dn,
         taskId,
         text: text || '',
@@ -87,7 +99,7 @@ router.post(
   }
 );
 
-router.patch('/:id/approve', authRequired(['admin']), async (req, res) => {
+router.patch('/:id/approve', authRequired([ADMIN_ROLE]), async (req, res) => {
   const { status } = req.body;
   const allowed = ['approved', 'rejected', 'pending'];
   if (!allowed.includes(status)) {
@@ -103,20 +115,24 @@ router.patch('/:id/approve', authRequired(['admin']), async (req, res) => {
   res.json(submission);
 });
 
-router.post('/gifts/:dayNumber/seen', authRequired([PLAYER_ROLE]), async (req, res) => {
+router.post('/gifts/:dayNumber/seen', authRequired(PLAYER_ROLES), async (req, res) => {
   const dayNumber = Number(req.params.dayNumber);
-  const wallet = await getWallet();
+  const role = actorRole(req);
+  const userId = getUserIdForRole(role);
+  const wallet = await getWallet(role);
+
   if (dayNumber === 5 && wallet.day5CoinGiftClaimed) {
     wallet.day5CoinGiftSeen = true;
     await wallet.save();
   }
-  await Submission.updateMany({ dayNumber }, { giftSeen: true });
+  await Submission.updateMany({ userId, dayNumber }, { giftSeen: true });
   res.json({ ok: true });
 });
 
-router.get('/gifts', authRequired([PLAYER_ROLE, ADMIN_ROLE]), async (_req, res) => {
-  const { gifts } = await buildGiftsList();
-  const coins = await getCoinState();
+router.get('/gifts', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (req, res) => {
+  const role = req.user.role === ADMIN_ROLE ? 'dasha' : actorRole(req);
+  const { gifts } = await buildGiftsList(role);
+  const coins = await getCoinState(role);
   res.json({
     gifts,
     coinShop: coins.day5CoinGift,
@@ -124,7 +140,7 @@ router.get('/gifts', authRequired([PLAYER_ROLE, ADMIN_ROLE]), async (_req, res) 
   });
 });
 
-router.get('/admin/all', authRequired(['admin']), async (req, res) => {
+router.get('/admin/all', authRequired([ADMIN_ROLE]), async (_req, res) => {
   const submissions = await Submission.find().sort({ createdAt: -1 }).lean();
   const days = await Day.find().lean();
   const dayMap = Object.fromEntries(days.map((d) => [d.dayNumber, d]));
@@ -136,6 +152,7 @@ router.get('/admin/all', authRequired(['admin']), async (req, res) => {
       ...s,
       taskTitle: task?.title,
       taskType: task?.submissionType,
+      userLabel: s.userId === 'test' ? 'тест' : 'Даша',
     };
   });
 

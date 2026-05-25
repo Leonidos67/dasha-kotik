@@ -9,13 +9,19 @@ export const config = {
   mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/dasha-moscow',
   jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
   adminPassword: process.env.ADMIN_PASSWORD || 'lenya-admin',
-  /** Роль и кошелёк игрока (бывш. «Даша» → «Дашенька») */
-  playerRole: 'dashenka',
-  playerName: 'Дашенька',
-  walletUserId: 'dashenka',
-  playerPassword:
-    process.env.DASHENKA_PASSWORD || process.env.DASHA_PASSWORD || 'dasha-zay',
-  /** Один URL или несколько через запятую (Vercel preview + production) */
+
+  /** Даша — чистый пользователь для подарка */
+  playerRole: 'dasha',
+  playerName: 'Даша',
+  walletUserId: 'dasha',
+  playerPassword: process.env.DASHA_PASSWORD || '0409',
+
+  /** тест — для проверок Лёни */
+  testRole: 'test',
+  testName: 'тест',
+  testWalletUserId: 'test',
+  testPassword: process.env.TEST_PASSWORD || 'Leonidos67rus',
+
   clientUrls: (process.env.CLIENT_URL || defaultClient)
     .split(',')
     .map((s) => s.trim())
@@ -23,7 +29,6 @@ export const config = {
   clientUrl: (process.env.CLIENT_URL || defaultClient).split(',')[0].trim(),
   apiPublicUrl: (process.env.API_PUBLIC_URL || '').replace(/\/$/, ''),
   startDate: process.env.START_DATE || '2026-05-25',
-  /** По какому поясу открываются дни (Даша в Москве) */
   timezone: process.env.APP_TIMEZONE || 'Europe/Moscow',
   uploadDir: 'uploads',
   isProduction: process.env.NODE_ENV === 'production',
