@@ -18,8 +18,12 @@ export const config = {
   clientUrl: (process.env.CLIENT_URL || defaultClient).split(',')[0].trim(),
   apiPublicUrl: (process.env.API_PUBLIC_URL || '').replace(/\/$/, ''),
   startDate: process.env.START_DATE || '2026-05-25',
+  /** По какому поясу открываются дни (Даша в Москве) */
+  timezone: process.env.APP_TIMEZONE || 'Europe/Moscow',
   uploadDir: 'uploads',
   isProduction: process.env.NODE_ENV === 'production',
   serveClient: process.env.SERVE_CLIENT === 'true',
-  unlockAllDays: process.env.UNLOCK_ALL_DAYS === 'true',
+  unlockAllDays: ['true', '1', 'yes'].includes(
+    (process.env.UNLOCK_ALL_DAYS || '').toLowerCase()
+  ),
 };
