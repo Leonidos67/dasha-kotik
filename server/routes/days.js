@@ -22,10 +22,13 @@ function giftStatusForDay(day, submissions) {
 }
 
 router.get('/meta', authRequired(['dasha', 'admin']), (_req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.json({
     currentDay: getCurrentDayNumber(),
     totalDays: 31,
     unlockAllDays: config.unlockAllDays,
+    startDate: config.startDate,
+    timezone: config.timezone,
   });
 });
 

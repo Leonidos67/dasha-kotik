@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useDayData } from '../hooks/useDayData';
+import { resolveAppDay } from '../utils/currentDay';
 import SubmitModal from '../components/SubmitModal';
 import GiftsTab from '../components/GiftsTab';
 import CoinsTab from '../components/CoinsTab';
@@ -24,6 +25,7 @@ export default function DashaApp() {
   const [unseenGifts, setUnseenGifts] = useState(0);
   const [coinsBalance, setCoinsBalance] = useState(null);
   const [booting, setBooting] = useState(true);
+  const [bootError, setBootError] = useState('');
 
   const { dayData, refreshDay } = useDayData(selectedDay);
   const [daysProgress, setDaysProgress] = useState({});
@@ -43,27 +45,56 @@ export default function DashaApp() {
     setCoinsBalance(balance);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
+  const applyMeta = useCallback((meta) => {
+    const { currentDay: day, selectedDay: selected } = resolveAppDay(meta);
+    setCurrentDay(day);
+    setSelectedDay(selected);
+    setBootError('');
+  }, []);
 
-    (async () => {
+  const loadMeta = useCallback(
+    async (opts = {}) => {
+      const { silent = false } = opts;
+      if (!silent) setBooting(true);
+      setBootError('');
+
       try {
         const meta = await api.meta();
-        if (cancelled) return;
-
-        setCurrentDay(meta.currentDay);
-        const day = meta.currentDay > 0 ? (meta.unlockAllDays ? 1 : meta.currentDay) : null;
-        setSelectedDay(day);
-        await Promise.all([loadGiftsBadge(), loadDaysProgress()]);
+        applyMeta(meta);
+        if (!silent) {
+          await Promise.all([loadGiftsBadge(), loadDaysProgress()]);
+        }
+      } catch (err) {
+        setBootError(err.message || 'Не удалось загрузить день');
       } finally {
-        if (!cancelled) setBooting(false);
+        if (!silent) setBooting(false);
       }
-    })();
+    },
+    [applyMeta, loadGiftsBadge, loadDaysProgress]
+  );
 
-    return () => {
-      cancelled = true;
+  useEffect(() => {
+    loadMeta();
+  }, [loadMeta]);
+
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        loadMeta({ silent: true });
+      }
     };
-  }, [loadGiftsBadge, loadDaysProgress]);
+
+    const onPageShow = (e) => {
+      if (e.persisted) loadMeta({ silent: true });
+    };
+
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('pageshow', onPageShow);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('pageshow', onPageShow);
+    };
+  }, [loadMeta]);
 
   useEffect(() => {
     if (dayData?.giftStatus && selectedDay) {
@@ -89,6 +120,19 @@ export default function DashaApp() {
     );
   }
 
+  if (bootError) {
+    return (
+      <div className="app-shell">
+        <div className="waiting-day">
+          <p className="error">{bootError}</p>
+          <button type="button" className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => loadMeta()}>
+            Повторить
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (currentDay === 0) {
     return (
       <div className="app-shell">
@@ -96,7 +140,10 @@ export default function DashaApp() {
           <div className="big">⏳</div>
           <h2>Скоро все начнётся коть)</h2>
           <p>Первый день — 25 мая 2026. Зай, чуть-чуть подожди. пжпжпж</p>
-          <button type="button" className="btn-secondary" style={{ marginTop: '1rem' }} onClick={logout}>
+          <button type="button" className="btn-secondary" style={{ marginTop: '1rem' }} onClick={() => loadMeta()}>
+            Обновить
+          </button>
+          <button type="button" className="btn-secondary" style={{ marginTop: '0.5rem' }} onClick={logout}>
             Слушаюсь Зай! Выйти
           </button>
         </div>

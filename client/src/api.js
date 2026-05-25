@@ -1,4 +1,8 @@
-const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+/** Fallback на Render, если на Vercel забыли VITE_API_URL (частая причина «Скоро…» на телефоне) */
+const API_BASE = (
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? 'https://dasha-kotik-api.onrender.com' : '')
+).replace(/\/$/, '');
 const API = `${API_BASE}/api`;
 
 /** Абсолютный URL для /uploads/... с Render */
@@ -11,6 +15,7 @@ export function mediaUrl(path) {
 async function request(path, options = {}) {
   const res = await fetch(`${API}${path}`, {
     credentials: 'include',
+    cache: 'no-store',
     ...options,
     headers: {
       ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
@@ -39,6 +44,7 @@ export const api = {
     fetch(`${API}/submissions`, {
       method: 'POST',
       credentials: 'include',
+      cache: 'no-store',
       body: formData,
     }).then(async (res) => {
       const data = await res.json();
