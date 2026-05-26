@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '../api';
+import { api, TASK_SUBMISSION_TYPES } from '../api';
 import MediaGallery from '../components/MediaGallery';
 import { useAuth } from '../context/AuthContext';
 
@@ -166,6 +166,7 @@ export default function AdminApp() {
                 ?.tasks?.map((task) => (
                   <TaskEditor key={task._id} dayNumber={editDay} task={task} onSave={loadDays} />
                 ))}
+              <AddTaskForm dayNumber={editDay} onAdded={loadDays} />
             </div>
           )}
         </>
@@ -174,13 +175,27 @@ export default function AdminApp() {
   );
 }
 
+function TaskTypeSelect({ value, onChange }) {
+  return (
+    <select className="admin-select" value={value} onChange={(e) => onChange(e.target.value)}>
+      {TASK_SUBMISSION_TYPES.map((t) => (
+        <option key={t.value} value={t.value}>
+          {t.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 function TaskEditor({ dayNumber, task, onSave }) {
   const [form, setForm] = useState({
     title: task.title,
     description: task.description || '',
     submissionType: task.submissionType,
+    hidden: !!task.hidden,
   });
   const [saved, setSaved] = useState(false);
+  const [toggling, setToggling] = useState(false);
 
   const save = async () => {
     await api.updateTask(dayNumber, task._id, form);
@@ -189,8 +204,36 @@ function TaskEditor({ dayNumber, task, onSave }) {
     setTimeout(() => setSaved(false), 1500);
   };
 
+  const toggleHidden = async () => {
+    const hidden = !form.hidden;
+    setToggling(true);
+    try {
+      await api.updateTask(dayNumber, task._id, { hidden });
+      setForm((f) => ({ ...f, hidden }));
+      onSave();
+    } finally {
+      setToggling(false);
+    }
+  };
+
   return (
-    <div className="edit-block" style={{ marginTop: '0.75rem' }}>
+    <div
+      className={`edit-block admin-task-editor ${form.hidden ? 'admin-task-editor--hidden' : ''}`}
+      style={{ marginTop: '0.75rem' }}
+    >
+      <div className="admin-task-editor__head">
+        <span className="admin-task-editor__status">
+          {form.hidden ? 'Скрыто у Даши' : 'Видно Даше'}
+        </span>
+        <button
+          type="button"
+          className="btn-secondary admin-task-editor__toggle"
+          onClick={toggleHidden}
+          disabled={toggling}
+        >
+          {form.hidden ? 'Показать' : 'Скрыть'}
+        </button>
+      </div>
       <label>Задание</label>
       <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
       <label>Описание</label>
@@ -199,27 +242,111 @@ function TaskEditor({ dayNumber, task, onSave }) {
         onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
       />
       <label>Тип отчёта</label>
-      <select
+      <TaskTypeSelect
         value={form.submissionType}
-        onChange={(e) => setForm((f) => ({ ...f, submissionType: e.target.value }))}
-        style={{
-          width: '100%',
-          padding: '0.6rem',
-          borderRadius: 8,
-          background: 'rgba(0,0,0,0.3)',
-          color: 'var(--text)',
-          border: '1px solid rgba(255,255,255,0.1)',
-        }}
-      >
-        <option value="photo">Фото</option>
-        <option value="voice">Голос</option>
-        <option value="text">Текст</option>
-        <option value="workout">Тренировка (скрин)</option>
-        <option value="video">Видео</option>
-      </select>
+        onChange={(submissionType) => setForm((f) => ({ ...f, submissionType }))}
+      />
       <button type="button" className="btn-secondary" style={{ marginTop: '0.5rem' }} onClick={save}>
         {saved ? 'Ок' : 'Сохранить задание'}
       </button>
+    </div>
+  );
+}
+
+function AddTaskForm({ dayNumber, onAdded }) {
+  const empty = {
+    title: '',
+    description: '',
+    submissionType: 'photo',
+    hidden: false,
+  };
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState(empty);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async () => {
+    if (!form.title.trim()) {
+      setError('Введи название задания');
+      return;
+    }
+    setError('');
+    setSaving(true);
+    try {
+      await api.createTask(dayNumber, {
+        title: form.title.trim(),
+        description: form.description.trim(),
+        submissionType: form.submissionType,
+        hidden: form.hidden,
+      });
+      setForm(empty);
+      setOpen(false);
+      onAdded();
+    } catch (e) {
+      setError(e.message || 'Не удалось добавить');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        className="btn-primary admin-add-task-btn"
+        style={{ marginTop: '1rem' }}
+        onClick={() => setOpen(true)}
+      >
+        + Добавить задание
+      </button>
+    );
+  }
+
+  return (
+    <div className="edit-block admin-add-task" style={{ marginTop: '1rem' }}>
+      <h4>Новое задание</h4>
+      <label>Название</label>
+      <input
+        value={form.title}
+        onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+        placeholder="Например: Утренняя зарядка"
+      />
+      <label>Описание</label>
+      <textarea
+        value={form.description}
+        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+        placeholder="Что нужно сделать и что прислать"
+      />
+      <label>Тип отчёта</label>
+      <TaskTypeSelect
+        value={form.submissionType}
+        onChange={(submissionType) => setForm((f) => ({ ...f, submissionType }))}
+      />
+      <label className="admin-checkbox-label">
+        <input
+          type="checkbox"
+          checked={form.hidden}
+          onChange={(e) => setForm((f) => ({ ...f, hidden: e.target.checked }))}
+        />
+        Сразу скрыть от Даши
+      </label>
+      {error && <p className="admin-form-error">{error}</p>}
+      <div className="admin-add-task__actions">
+        <button type="button" className="btn-primary" onClick={submit} disabled={saving}>
+          {saving ? 'Добавляю…' : 'Добавить в базу'}
+        </button>
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={() => {
+            setOpen(false);
+            setForm(empty);
+            setError('');
+          }}
+        >
+          Отмена
+        </button>
+      </div>
     </div>
   );
 }

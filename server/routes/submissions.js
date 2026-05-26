@@ -11,6 +11,7 @@ import { publicUploadUrl } from '../utils/uploadUrl.js';
 import { getCurrentDayNumber } from '../utils/dayNumber.js';
 import { getCoinState, getWallet } from '../utils/coins.js';
 import { buildGiftsList } from '../utils/gifts.js';
+import { visibleTasks } from '../utils/tasks.js';
 import {
   ADMIN_ROLE,
   getUserIdForRole,
@@ -59,6 +60,7 @@ router.post(
 
     const task = day.tasks.id(taskId);
     if (!task) return res.status(404).json({ error: 'Задание не найдено' });
+    if (task.hidden) return res.status(400).json({ error: 'Это задание скрыто' });
 
     const current = getCurrentDayNumber();
     if (dn > current) {

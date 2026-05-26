@@ -138,9 +138,9 @@ export default function GiftsTab({ onUpdate }) {
         <div className="waiting-day">
           <div className="big">🎁</div>
           <p>Пока нет открытых подарков.</p>
-          <p className="waiting-day__hint">
+          {/* <p className="waiting-day__hint">
             Собери 10 монеток за одобренные задания (дни 1–5) и обменяй их на подарок.
-          </p>
+          </p> */}
         </div>
       ) : (
         gifts.map((g) => (

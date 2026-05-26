@@ -5,6 +5,7 @@ import { authRequired } from '../middleware/auth.js';
 import { config } from '../config.js';
 import { COIN_DAY5_REDEEM } from '../utils/coins.js';
 import { getCurrentDayNumber } from '../utils/dayNumber.js';
+import { visibleTasks } from '../utils/tasks.js';
 import {
   ADMIN_ROLE,
   getUserIdForRole,
@@ -15,7 +16,10 @@ import {
 const router = Router();
 
 function giftStatusForDay(day, submissions) {
-  const taskIds = day.tasks.map((t) => t._id.toString());
+  const taskIds = visibleTasks(day.tasks).map((t) => t._id.toString());
+  if (taskIds.length === 0) {
+    return { allSubmitted: true, allApproved: true, unlocked: true };
+  }
   const daySubs = submissions.filter((s) => s.dayNumber === day.dayNumber);
   const allSubmitted = taskIds.every((id) =>
     daySubs.some((s) => s.taskId.toString() === id)
@@ -58,7 +62,8 @@ router.get('/:dayNumber', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (re
   if (!day) return res.status(404).json({ error: 'День не найден' });
 
   const submissions = await Submission.find({ userId, dayNumber }).lean();
-  const tasks = day.tasks.map((task) => {
+  const dayTasks = isAdmin ? day.tasks : visibleTasks(day.tasks);
+  const tasks = dayTasks.map((task) => {
     const sub = submissions.find((s) => s.taskId.toString() === task._id.toString());
     return {
       ...task,
@@ -88,7 +93,7 @@ router.get('/', authRequired([...PLAYER_ROLES, ADMIN_ROLE]), async (req, res) =>
     isBonus: day.isBonus,
     isFinale: day.isFinale,
     title: day.title,
-    taskCount: day.tasks.length,
+    taskCount: visibleTasks(day.tasks).length,
     gift: giftForClient(day, isAdmin),
     giftStatus: giftStatusForDay(day, submissions),
   }));

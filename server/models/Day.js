@@ -10,6 +10,7 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
     order: { type: Number, default: 0 },
+    hidden: { type: Boolean, default: false },
   },
   { _id: true }
 );

@@ -87,4 +87,17 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify(data),
     }),
+  createTask: (dayNumber, data) =>
+    request(`/admin/days/${dayNumber}/tasks`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
+
+export const TASK_SUBMISSION_TYPES = [
+  { value: 'photo', label: 'Фото' },
+  { value: 'voice', label: 'Голос' },
+  { value: 'text', label: 'Текст' },
+  { value: 'workout', label: 'Тренировка (скрин)' },
+  { value: 'video', label: 'Видео' },
+];

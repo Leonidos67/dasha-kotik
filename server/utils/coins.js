@@ -3,6 +3,7 @@ import { Day } from '../models/Day.js';
 import { Submission } from '../models/Submission.js';
 import { Wallet } from '../models/Wallet.js';
 import { getUserIdForRole, normalizeRole, PLAYER_ROLE } from './roles.js';
+import { visibleTasks } from './tasks.js';
 
 export const COIN_DAYS_FROM = 1;
 export const COIN_DAYS_TO = 5;
@@ -56,7 +57,7 @@ export async function getCoinsBreakdown(role = PLAYER_ROLE) {
   }).lean();
 
   return days.map((day) => {
-    const taskIds = day.tasks.map((t) => t._id.toString());
+    const taskIds = visibleTasks(day.tasks).map((t) => t._id.toString());
     const daySubs = submissions.filter((s) => s.dayNumber === day.dayNumber);
     const approved = taskIds.filter((id) =>
       daySubs.some((s) => s.taskId.toString() === id && s.status === 'approved')
